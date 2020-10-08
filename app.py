@@ -1,33 +1,40 @@
-# Create an instance of Flask
-app = Flask(__name__)
+from flask import Flask, render_template, redirect
+from flask_pymongo import PyMongo
+import data
+from pymongo import MongoClient
+import requests
+import pandas as pd
 
-# Use PyMongo to establish Mongo connection
-mongo = PyMongo(app, uri="mongodb://localhost:27017/x_app")
+client = MongoClient('127.0.0.1', 27017)
+db_name = 'kiva data'
 
+# connect to the database
+db = client[db_name]
 
-# Route to render index.html template using data from Mongo
-@app.route("/")
-def home():
+loans = db.loans
 
-    # Find one record of data from the mongo database
-    # @TODO: YOUR CODE HERE!
-    x_data = mongo.db.collection.find_one()
+fields = "name, loan_amount, "
 
-    # Return template and data
-    return render_template("index.html", x=x_data)
+pages = list(range(0, 1000))
+pages_list = pages[0:1000:100]
 
+base_url = 'https://api.kivaws.org/graphql?query='
 
+graphql_query = "{lend {loans (id: ) {totalCount values {name loanAmount image {url(presetSize: small)}activity {name}geocode {latitude longitude country {isoCode name}}lenders(limit: 0) {totalCount}}}}}"
 
-    # Run the API function and save the results to a variable
-    api_data = data.data_info()
+response = requests.get(base_url+ graphql_query).json()
 
-    # Update the Mongo database using update and upsert=True
-    # @TODO: YOUR CODE HERE!
-    mongo.db.collection.update({}, page_data, upsert=True)
+def get_games(url_base, num_pages, fields, collection):
 
-    # Redirect back to home page
-    return redirect("/")
+    base_url = 'https://api.kivaws.org/graphql?query='
 
+    graphql_query = "{lend {loans (id: ) {totalCount values {name loanAmount image {url(presetSize: small)}activity {name}geocode {latitude longitude country {isoCode name}}lenders(limit: 0) {totalCount}}}}}"
 
-if __name__ == "__main__":
-    app.run(debug=True)
+    for page in num_pages:
+        url = url_
+        print(url)
+        response = requests.get(url, headers=headers).json()
+        print(response)
+        video_games = response['results']
+        for i in video_games:
+            collection.insert_one(i)

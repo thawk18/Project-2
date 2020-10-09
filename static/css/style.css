@@ -6,8 +6,8 @@ body {
 #map,
 body,
 html {
-  height: 85%;
-  width: 85%;
+  height: 100%;
+  width: 95%;
 }
 
 .leaflet-popup-content {
@@ -50,4 +50,14 @@ html {
 
 h1 {
   text-align: center;
+}
+
+#bar{
+  width: 50%; /* set width to 50% of page width */
+  float: left; /* Make the element go to the left */
+}
+
+#gauge{
+  width: 50%;
+  float: right;
 }

@@ -1,40 +1,61 @@
-from flask import Flask, render_template, redirect
+from flask import (Flask, render_template, redirect, jsonify, request)
+
 from flask_pymongo import PyMongo
-import data
 from pymongo import MongoClient
 import requests
 import pandas as pd
 
-client = MongoClient('127.0.0.1', 27017)
-db_name = 'kiva data'
+app = Flask(__name__)
+app.config["MONGO_URI"] = "mongodb://localhost:27017/loans_db"
+# app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+mongo = PyMongo(app)
+# Use PyMongo to establish Mongo connection
+# mongo = PyMongo(app, URI="mongodb://localhost:27017/loans_db")
+db = mongo.db.loans_db
 
-# connect to the database
-db = client[db_name]
 
-loans = db.loans
 
-fields = "name, loan_amount, "
+@app.route("/")
+def home():
 
-pages = list(range(0, 1000))
-pages_list = pages[0:1000:100]
+    return render_template("index.html")
 
-base_url = 'https://api.kivaws.org/graphql?query='
 
-graphql_query = "{lend {loans (id: ) {totalCount values {name loanAmount image {url(presetSize: small)}activity {name}geocode {latitude longitude country {isoCode name}}lenders(limit: 0) {totalCount}}}}}"
 
-response = requests.get(base_url+ graphql_query).json()
+@app.route("/api")
+def api():
 
-def get_games(url_base, num_pages, fields, collection):
+    results = db.find()
 
-    base_url = 'https://api.kivaws.org/graphql?query='
+    loan_list = []
 
-    graphql_query = "{lend {loans (id: ) {totalCount values {name loanAmount image {url(presetSize: small)}activity {name}geocode {latitude longitude country {isoCode name}}lenders(limit: 0) {totalCount}}}}}"
+    for x in results:
 
-    for page in num_pages:
-        url = url_
-        print(url)
-        response = requests.get(url, headers=headers).json()
-        print(response)
-        video_games = response['results']
-        for i in video_games:
-            collection.insert_one(i)
+        name = x['name']
+        lat = x['geocode']['latitude'] 
+        lon = x['geocode']['longitude'] 
+        loanAmount = x['loanAmount']
+        country = x['geocode']['country']['name']
+        isocode = x['geocode']['country']['isoCode']
+        lendcount = x['lenders']['totalCount'] 
+
+        loan_data = {
+            "name": name,
+            "loan_amount": loanAmount,
+            "lat": lat,
+            "lon": lon,
+            "country": country,
+            "isocode": isocode,
+            "lender_count": lendcount
+        }
+
+        loan_list.append(loan_data)
+
+    # name = x
+    # loan_data = {"name" : name}
+
+    return jsonify(loan_list)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

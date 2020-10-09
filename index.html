@@ -18,7 +18,8 @@
       <div class="row">
         <div class="col-md-12 jumbotron text-center">
           <h1>Kiva MicroLoan Project</h1>
-          <p>Use Interactive Map to Explore the loans</p>
+          <h2>Use Interactive Map to Explore the loans</h2>
+          
         </div>
       </div>
       <div class="row">
@@ -28,9 +29,7 @@
             <select id="selDataset" onchange="optionChanged(this.value)"></select>
           </div>
           <div class="panel panel-primary">
-            <div class="panel-heading">
-              <h3 class="panel-title">Demographic Info</h3>
-            </div>
+            
             <div id="sample-metadata" class="panel-body"></div>
           </div>
         </div>
@@ -40,7 +39,7 @@
           <div id="bar"></div>
         </div>
         <div class="col-md-5">
-          <div id="gauge"></div>
+          
         </div>
       </div>
       <div class="row">
@@ -51,9 +50,15 @@
     </div>
     <!-- The div where we will inject our map -->
     
-  
-    <div id="map"></div>
+    <br></br>
     <button onClick="window.location.reload();">Zoom Out</button>
+    <div id="map" ></div>
+    <br></br>
+    <br></br>
+    <div class="panel-heading">
+      <h3 class="panel-title">Gauge Chart</h3>
+    </div>
+    <div id="gauge"></div>
     
 
 

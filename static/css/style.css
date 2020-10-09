@@ -3,7 +3,7 @@ body {
   margin: 0;
 }
 
-#map,
+#map, 
 body,
 html {
   height: 100%;
@@ -52,12 +52,16 @@ h1 {
   text-align: center;
 }
 
+h2 {
+  text-align: center;
+}
+
 #bar{
   width: 50%; /* set width to 50% of page width */
   float: left; /* Make the element go to the left */
 }
 
 #gauge{
-  width: 50%;
-  float: right;
+  width: 25%;
+  float: left;
 }

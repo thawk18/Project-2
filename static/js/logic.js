@@ -19,6 +19,8 @@ var geoData = "static/data/start.geojson";
 
 var geojson;
 
+var isocodex;
+
 // Grab data with d3
 d3.json(geoData, function(data) {
 
@@ -44,13 +46,68 @@ d3.json(geoData, function(data) {
     },
 
     
+
+    
     // Binding a pop-up to each layer
     onEachFeature: function(feature, layer) {
       layer.bindPopup("Name: " + feature.properties.name + "<br>Current Nr Loans:<br>" + feature.properties.count+ "<br>Funds Lent in Country:<br>" + "$" + feature.properties.fundsLentInCountry);
       layer.on('mouseover', function () {this.setStyle({'fillColor': '#C0BCB6'})});
       layer.on('mouseout', function() {geojson.resetStyle(this);this.bringToBack();});
       layer.on('click', function () {myMap.fitBounds(layer.getBounds(),{'duration':200});});
-      layer.on('click', function () {isocodex = feature.properties.isoCode})
+      layer.on('click', function () {isocodex = feature.properties.isoCode
+        var jsonurl = "static/data/data.json"
+
+        d3.json(jsonurl , function(data) {
+          console.log(data[0].geocode)
+          var averloanamount = []
+          var total = 0
+          var count = 0
+          for (var i = 0; i < data.length; i++) {
+            if (data[i].geocode.country.isoCode === isocodex){
+              total = Number(total) + Number(data[i].loanAmount)}}
+              count = count + 1
+              var average = total/count
+              console.log(average)
+                
+          var datax = [
+            {
+              domain: { x: [0, 1], y: [0, 1] },
+              title: {
+                text: "Average Loan per User"
+              },
+              type: "indicator",
+        
+              mode: "gauge",
+              gauge: {
+                axis: {
+                  range: [0, 90000],
+                  tickvals: [0, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000],
+                  ticks: "outside"
+                },
+        
+                steps: [
+                  { range: [0, 10000], color: "#3a9e3b" },
+                  { range: [10000, 20000], color: "#46f316" },
+                  { range: [20000, 30000], color: "#90bf56" },
+                  { range: [30000, 40000], color: "#b1be54" },
+                  { range: [40000, 50000], color: "#d9f41e" },
+                  { range: [50000, 60000], color: "#d4a025" },
+                  { range: [60000, 70000], color: "#f7af02" },
+                  { range: [70000, 80000], color: "#b72f0b" },
+                  { range: [80000, 90000], color: "#6f1c06" }
+                ],
+                threshold: {
+                  line: { color: "red", width: 4 },
+                  thickness: 1,
+                  value: average
+                }
+              }
+            }
+          ];
+          var layout = { width: 500, height: 400, margin: { t: 0, b: 0 } };
+          Plotly.newPlot("gauge", datax, layout);
+        })
+      })
     }
   }).addTo(myMap);
 
@@ -163,81 +220,91 @@ function plotFunctions() {
   gaugeChart (valueSelect);
   console.log(valueSelect)} 
 
-function panelPlot(valueSelect) {
-  var filterValue = data.data.lend.loans.values.filter(value => value.name == valueSelect);
-  var divValue = d3.select(".panel-body");
-  divValue.html("");
-  divValue.append("p").text(`Name: ${filterValue.name}`);
-  divValue.append("p").text(`Country: ${filterValue.country}`);
-  divValue.append("p").text(`Gender: ${filterValue.data.gender}`);
-  divValue.append("p").text(`Activity: ${filterValue.activity}`);
-  divValue.append("p").text(`Loan Amount: ${filterValue.loanAmount}`);
-}
+// function panelPlot(valueSelect) {
+//   var filterValue = data.data.lend.loans.values.filter(value => value.name == valueSelect);
+//   var divValue = d3.select(".panel-body");
+//   divValue.html("");
+//   divValue.append("p").text(`Name: ${filterValue.name}`);
+//   divValue.append("p").text(`Country: ${filterValue.country}`);
+//   divValue.append("p").text(`Gender: ${filterValue.data.gender}`);
+//   divValue.append("p").text(`Activity: ${filterValue.activity}`);
+//   divValue.append("p").text(`Loan Amount: ${filterValue.loanAmount}`);
+// }
 
 // Create the Trace
-var trace = {
-  x: ['a','b','c'],
-  y: [4,2,3],
-  type: "bar",
-  orientation: "h"
-};
+// var trace = {
+//   x: ['a','b','c'],
+//   y: [4,2,3],
+//   type: "bar",
+//   orientation: "h"
+// };
 
-  //arrange in descending order
-var layout = {width: 600, height: 300,
-  yaxis: {
-    autorange: "reversed"
-  }
-};
+//   //arrange in descending order
+// var layout = {width: 600, height: 300,
+//   yaxis: {
+//     autorange: "reversed"
+//   }
+// };
 
-    // Create the data array for the plot
-var graph = [trace];
+//     // Create the data array for the plot
+// var graph = [trace];
 
-    // Plot the chart to be placed in the div tag with id "bar"
-Plotly.newPlot("bar", graph, layout);
+//     // Plot the chart to be placed in the div tag with id "bar"
+// Plotly.newPlot("bar", graph, layout);
+
+// var jsonurl = "static/data/data.json"
+
+// d3.json(jsonurl , function(data) {
+//   console.log(data[0].geocode)
+//   var averloanamount = []
+//   var total = 0
+//   for (var i = 0; i < data.length; i++) {
+//     if (data[i].geocode.country.isoCode === isocodex){
+//       total = total + data[i].loanAmount}}
+//       var average = total/data.length
+//       console.log(isocodex)
 
 
+//   var datax = [
+//     {
+//       domain: { x: [0, 1], y: [0, 1] },
+//       title: {
+//         text: "Average Loan per User"
+//       },
+//       type: "indicator",
 
+//       mode: "gauge",
+//       gauge: {
+//         axis: {
+//           range: [0, 9000],
+//           tickvals: [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+//           ticks: "outside"
+//         },
 
-var datax = [
-  {
-    domain: { x: [0, 1], y: [0, 1] },
-    title: {
-      text: "Average Loan per User"
-    },
-    type: "indicator",
-
-    mode: "gauge",
-    gauge: {
-      axis: {
-        range: [0, 9000],
-        tickvals: [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
-        ticks: "outside"
-      },
-
-      steps: [
-        { range: [0, 1000], color: "#3a9e3b" },
-        { range: [1000, 2000], color: "#46f316" },
-        { range: [2000, 3000], color: "#90bf56" },
-        { range: [3000, 4000], color: "#b1be54" },
-        { range: [4000, 5000], color: "#d9f41e" },
-        { range: [5000, 6000], color: "#d4a025" },
-        { range: [6000, 7000], color: "#f7af02" },
-        { range: [7000, 8000], color: "#b72f0b" },
-        { range: [8000, 9000], color: "#6f1c06" }
-      ],
-      threshold: {
-        line: { color: "red", width: 4 },
-        thickness: 1,
-        value: 6
-      }
-    }
-  }
-];
-var layout = { width: 500, height: 400, margin: { t: 0, b: 0 } };
-Plotly.newPlot("gauge", datax, layout);
-
-const url = "/api";
-d3.json(url , function(response) {
-  console.log(response)
-  }
-);
+//         steps: [
+//           { range: [0, 1000], color: "#3a9e3b" },
+//           { range: [1000, 2000], color: "#46f316" },
+//           { range: [2000, 3000], color: "#90bf56" },
+//           { range: [3000, 4000], color: "#b1be54" },
+//           { range: [4000, 5000], color: "#d9f41e" },
+//           { range: [5000, 6000], color: "#d4a025" },
+//           { range: [6000, 7000], color: "#f7af02" },
+//           { range: [7000, 8000], color: "#b72f0b" },
+//           { range: [8000, 9000], color: "#6f1c06" }
+//         ],
+//         threshold: {
+//           line: { color: "red", width: 4 },
+//           thickness: 1,
+//           value: average
+//         }
+//       }
+//     }
+//   ];
+//   var layout = { width: 500, height: 400, margin: { t: 0, b: 0 } };
+//   Plotly.newPlot("gauge", datax, layout);
+// })
+// const url = "/api";
+// d3.json(url , function(response) {
+//   console.log(response)
+//   }
+// );
